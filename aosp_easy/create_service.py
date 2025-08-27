@@ -23,6 +23,12 @@ def create_android_bp(app_dir_name, package_name):
     platform_apis: true,
     dxflags: ["--multi-dex"],
     aaptflags: ["--extra-packages {package_name}"],
+    // static_libs: [
+    //     "xxx",
+    // ],
+    // libs: [
+    //     "androidx.annotation_annotation",
+    // ],
 }}
 """
 
@@ -140,6 +146,8 @@ public class {service_class} extends Service {{
 """
 
 def create_readme(package_name, service_name, broadcast_action):
+    print("生成 README.md 文件内容")
+    print(f"包名: {package_name}, 服务名: {service_name}, 广播 Action: {broadcast_action}")
     return f"""# {service_name} Service
 This is an Android service that can be controlled via broadcast commands.
 
@@ -147,15 +155,14 @@ This is an Android service that can be controlled via broadcast commands.
 
 ### Start Service
 ```bash
-am start-service {{package_name}}/.{{service_name}}
-
+am start-service {package_name}/.{service_name}
 ```
 
 ### Test Commands 测试命令
 ```bash
-am broadcast -a {{broadcast_action}} --es command "start"
-am broadcast -a {{broadcast_action}} --es command "stop"
-am broadcast -a {{broadcast_action}} --es command "status"
+am broadcast -a {broadcast_action} --es command "start"
+am broadcast -a {broadcast_action} --es command "stop"
+am broadcast -a {broadcast_action} --es command "status"
 ```
 """
 
@@ -226,7 +233,7 @@ def main():
     
     # Service 名
     service_name = input("请输入 Service 名（默认：MainService）：").strip() or "MainService"
-    service_name = to_camel_case(service_name)
+    # service_name = to_camel_case(service_name)
     
     # 广播Action
     default_action = f"{pkg_name}.ACTION_COMMAND"

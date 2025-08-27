@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 setup(
     name='aosp_easy',  # 包的名字
     author='min',  # 作者
-    version='0.1.0',  # 版本号
+    version='0.2.0',  # 版本号
     license='MIT',
 
     description='make aosp easy',  # 描述

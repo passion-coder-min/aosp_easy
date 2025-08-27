@@ -24,6 +24,12 @@ def create_android_bp(app_dir_name, package_name):
     platform_apis: true,
     dxflags: ["--multi-dex"],
     aaptflags: ["--extra-packages {package_name}"],
+    // static_libs: [
+    //     "xxxx",
+    // ],
+    // libs: [
+    //     "androidx.annotation_annotation",
+    // ],
 }}
 """
 
@@ -104,18 +110,33 @@ def create_project_structure(base_dir, app_dir, pkg_name, act_class, app_name):
     os.makedirs(app_path, exist_ok=True)
     print(f"正在创建项目到：{app_path}")
 
+    act_snake = to_snake_case(act_class)
+    # 判断是否为 main activity
+    if act_snake in ("main_activity", "mainactivity"):
+        layout_file = "activity_main.xml"
+        layout_name = "activity_main"
+    else:
+        # 去掉末尾的 _activity 或 activity
+        if act_snake.endswith("_activity"):
+            base = act_snake[:-9]
+        elif act_snake.endswith("activity"):
+            base = act_snake[:-8]
+        else:
+            base = act_snake
+        layout_file = f"activity_{base}.xml"
+        layout_name = f"activity_{base}"
+
     # 创建核心文件
     files = [
         ("Android.bp", create_android_bp(app_dir, pkg_name)),
         ("AndroidManifest.xml", create_manifest(pkg_name, act_class)),
-        (f"res/layout/activity_{to_snake_case(act_class)}.xml", create_layout_xml()),
+        (f"res/layout/{layout_file}", create_layout_xml()),
         (f"res/values/strings.xml", create_strings_xml(app_name)),
     ]
 
     # 创建源码目录和Activity文件
     src_dir = os.path.join(app_path, "src", *pkg_name.split('.'))
     os.makedirs(src_dir, exist_ok=True)
-    layout_name = to_snake_case(act_class)
     files.append((f"{src_dir}/{act_class}.java", create_activity_java(pkg_name, act_class, layout_name)))
 
     # 写入所有文件
